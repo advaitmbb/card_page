@@ -16,7 +16,7 @@ jobs:
 
       - name: Fetch the published sheet CSV
         env:
-          CSV_URL: "PASTE-YOUR-PUBLISHED-CSV-URL-HERE"
+          CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQlrMAXaL_8wc1NXIzZiVN8yAXaqUQDoZImlijKp1mHJjXObx1dr8AM0wXv2k_Lx3wPm1vSqB_tXyoH/pub?gid=1420643890&single=true&output=csv"
         run: |
           curl -sSL --fail --retry 3 --retry-delay 5 "$CSV_URL" -o cards.csv
 
