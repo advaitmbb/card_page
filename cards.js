@@ -11,6 +11,22 @@
 
   var DATA_URL = "https://advaitmbb.github.io/card_page/cards.json";
 
+  /* ---- EDIT YOUR PROMISE BANNER COPY HERE ----
+     You can use <b>...</b> to highlight a phrase in bright blue. */
+  var PROMISE = {
+    headline: "The best publicly available offer on every card.",
+    body: "This page has one job: peace of mind. For every card below, I link the strongest public offer I can find \u2014 <b>even when it earns me nothing</b>. And every card is labeled with exactly what kind of link it is, so you always know where you stand."
+  };
+
+  /* ---- LINK-TYPE PILLS ----
+     Set the `link_type` column in your sheet to one of these keys.
+     Leave the cell blank to show no pill. */
+  var LINK_PILLS = {
+    affiliate: { label: "Affiliate link", cls: "aff" },
+    referral:  { label: "Referral link", cls: "ref" },
+    public:    { label: "Public offer \u00B7 no commission", cls: "pub" }
+  };
+
   /* ---- find or create the mount point ---- */
   var mount = document.getElementById("mbb-cards");
   if (!mount) {
@@ -33,7 +49,7 @@
   /* ---- scoped styles ---- */
   var CSS = `
   #mbb-cards{
-    --cream:#FAF6EE;--navy:#1A2B3C;--accent:#0E6BA8;--footer:#14222F;
+    --cream:#FAF6EE;--navy:#1A2B3C;--accent:#0E6BA8;--bright:#38b6ff;--footer:#14222F;
     --ink:#1A2B3C;--muted:#5d6b78;--line:#e4dccd;--card:#fff;
     --good:#1f7a4d;--good-bg:#eaf5ee;--elev:#9a5b00;--elev-bg:#fbeedd;
     --radius:14px;--shadow:0 1px 2px rgba(26,43,60,.06),0 6px 24px rgba(26,43,60,.06);
@@ -43,6 +59,11 @@
   #mbb-cards *{box-sizing:border-box}
   #mbb-cards a{color:var(--accent);text-decoration:none}
   #mbb-cards .mbbc-wrap{max-width:1180px;margin:0 auto;padding:0 18px}
+
+  #mbb-cards .mbbc-promise{background:var(--footer);border-radius:14px;padding:22px 24px;margin:0 0 16px}
+  #mbb-cards .mbbc-promise-h{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:clamp(20px,2.6vw,27px);line-height:1.15;color:#fff;margin:0 0 8px}
+  #mbb-cards .mbbc-promise-b{font-size:14.5px;line-height:1.55;color:#aebcc7;max-width:700px;margin:0}
+  #mbb-cards .mbbc-promise-b b{color:var(--bright);font-weight:600}
 
   #mbb-cards .mbbc-disc{background:#fff;border:1px solid var(--line);border-radius:12px;
     padding:13px 16px;margin:0 0 18px;font-size:13px;color:var(--muted);line-height:1.5}
@@ -100,7 +121,16 @@
   #mbb-cards .mbbc-bens{margin:14px 0 0;padding:0;list-style:none;font-size:13px}
   #mbb-cards .mbbc-bens li{position:relative;padding-left:18px;margin-bottom:5px;color:#3a4855}
   #mbb-cards .mbbc-bens li:before{content:"";position:absolute;left:2px;top:7px;width:6px;height:6px;border-radius:50%;background:var(--accent)}
-  #mbb-cards .mbbc-cta-row{margin-top:auto;padding-top:18px;display:flex;align-items:center;gap:14px}
+  #mbb-cards .mbbc-foot{margin-top:auto;padding-top:18px}
+  #mbb-cards .mbbc-ltype{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:999px;margin:0 0 12px}
+  #mbb-cards .mbbc-ltype:before{content:"";width:7px;height:7px;border-radius:50%}
+  #mbb-cards .mbbc-ltype.aff{background:#eaf1f7;color:#0E6BA8}
+  #mbb-cards .mbbc-ltype.aff:before{background:#0E6BA8}
+  #mbb-cards .mbbc-ltype.ref{background:#f4eefb;color:#6b3fa0}
+  #mbb-cards .mbbc-ltype.ref:before{background:#6b3fa0}
+  #mbb-cards .mbbc-ltype.pub{background:var(--good-bg);color:var(--good)}
+  #mbb-cards .mbbc-ltype.pub:before{background:var(--good)}
+  #mbb-cards .mbbc-cta-row{display:flex;align-items:center;gap:14px}
   #mbb-cards .mbbc-cta{flex:1;text-align:center;background:var(--accent);color:#fff;font-weight:600;font-size:15px;padding:12px 16px;border-radius:10px;transition:background .15s}
   #mbb-cards .mbbc-cta:hover{background:#0a5688}
   #mbb-cards .mbbc-review{font-size:13.5px;font-weight:600;white-space:nowrap}
@@ -119,6 +149,7 @@
   /* ---- skeleton ---- */
   mount.innerHTML =
     '<div class="mbbc-wrap">' +
+      '<div class="mbbc-promise"><div class="mbbc-promise-h">' + PROMISE.headline + '</div><div class="mbbc-promise-b">' + PROMISE.body + '</div></div>' +
       '<div class="mbbc-disc"><b>Advertiser disclosure:</b> I have affiliate partnerships and may earn a commission when you\u2019re approved for a card through my links \u2014 at no cost to you. I only list offers I\u2019d take myself, and I show the best public offer even when it earns me nothing. Opinions are my own and haven\u2019t been reviewed or approved by any issuer.</div>' +
       '<div class="mbbc-controls">' +
         '<div class="mbbc-row">' +
@@ -182,6 +213,10 @@
     var rf = c.show_rates_fees
       ? '<div class="mbbc-rf"><a href="#rates-fees" target="_blank" rel="noopener">See Rates &amp; Fees</a> \u00B7 Terms apply</div>' : "";
 
+    var lt = LINK_PILLS[String(c.link_type || "").trim().toLowerCase()];
+    var ltypeHTML = lt ? '<div class="mbbc-ltype ' + lt.cls + '">' + lt.label + '</div>' : "";
+    var relAttr = (lt && lt.cls === "pub") ? "nofollow noopener" : "sponsored nofollow noopener";
+
     return '<article class="mbbc-card">' +
       '<div class="mbbc-top">' +
         '<div class="mbbc-art">' + art + '</div>' +
@@ -197,10 +232,13 @@
       valueBlock +
       (c.my_take ? '<p class="mbbc-take"><span class="th">My take</span> ' + esc(c.my_take) + '</p>' : "") +
       (bens ? '<ul class="mbbc-bens">' + bens + '</ul>' : "") +
-      '<div class="mbbc-cta-row">' +
-        '<a class="mbbc-cta" href="' + esc(c.affiliate_url || "#") + '" target="_blank" rel="nofollow sponsored noopener">View offer \u2192</a>' +
-        (c.review_url ? '<a class="mbbc-review" href="' + esc(c.review_url) + '">Full review</a>' : "") +
-      '</div>' + rf +
+      '<div class="mbbc-foot">' +
+        ltypeHTML +
+        '<div class="mbbc-cta-row">' +
+          '<a class="mbbc-cta" href="' + esc(c.affiliate_url || "#") + '" target="_blank" rel="' + relAttr + '">View offer \u2192</a>' +
+          (c.review_url ? '<a class="mbbc-review" href="' + esc(c.review_url) + '">Full review</a>' : "") +
+        '</div>' + rf +
+      '</div>' +
     '</article>';
   }
 
