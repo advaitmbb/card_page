@@ -1,3 +1,4 @@
+
 /* ============================================================
    Miles Beyond Borders — Card Page widget
    Embed in Showit with:
@@ -115,10 +116,16 @@
   #mbb-cards .mbbc-vnum{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:20px;color:var(--good)}
   #mbb-cards .mbbc-vtag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--good)}
   #mbb-cards .mbbc-vnote{font-size:12px;color:#3f6b54;margin-top:3px;line-height:1.4}
-  #mbb-cards .mbbc-take{margin-top:14px;font-size:14px;line-height:1.5}
-  #mbb-cards .mbbc-take .th{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:13.5px;color:var(--accent)}
-  #mbb-cards .mbbc-take .th:before{content:"\\2726  "}
-  #mbb-cards .mbbc-bens{margin:14px 0 0;padding:0;list-style:none;font-size:13px}
+  #mbb-cards .mbbc-acc{border-top:1px solid var(--line)}
+  #mbb-cards .mbbc-acc-sum{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    cursor:pointer;list-style:none;padding:13px 0 12px;font-size:14px;font-weight:600;color:var(--ink)}
+  #mbb-cards .mbbc-acc-sum::-webkit-details-marker{display:none}
+  #mbb-cards .mbbc-acc-sum:hover{color:var(--accent)}
+  #mbb-cards .mbbc-acc-lab.take{font-family:'Fraunces',Georgia,serif;color:var(--accent);font-weight:600}
+  #mbb-cards .mbbc-chev{color:var(--muted);transition:transform .18s ease;flex:0 0 auto}
+  #mbb-cards details[open] .mbbc-chev{transform:rotate(180deg)}
+  #mbb-cards .mbbc-acc-body{padding:0 0 14px;font-size:14px;line-height:1.5;color:#3a4855}
+  #mbb-cards .mbbc-bens{margin:0;padding:0;list-style:none;font-size:13px}
   #mbb-cards .mbbc-bens li{position:relative;padding-left:18px;margin-bottom:5px;color:#3a4855}
   #mbb-cards .mbbc-bens li:before{content:"";position:absolute;left:2px;top:7px;width:6px;height:6px;border-radius:50%;background:var(--accent)}
   #mbb-cards .mbbc-foot{margin-top:auto;padding-top:18px}
@@ -217,6 +224,14 @@
     var ltypeHTML = lt ? '<div class="mbbc-ltype ' + lt.cls + '">' + lt.label + '</div>' : "";
     var relAttr = (lt && lt.cls === "pub") ? "nofollow noopener" : "sponsored nofollow noopener";
 
+    var chev = '<svg class="mbbc-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>';
+    var takeBlock = c.my_take
+      ? '<details class="mbbc-acc"><summary class="mbbc-acc-sum"><span class="mbbc-acc-lab take">\u2726 My take</span>' + chev + '</summary><div class="mbbc-acc-body">' + esc(c.my_take) + '</div></details>'
+      : "";
+    var hiBlock = bens
+      ? '<details class="mbbc-acc"><summary class="mbbc-acc-sum"><span class="mbbc-acc-lab">Card highlights</span>' + chev + '</summary><div class="mbbc-acc-body"><ul class="mbbc-bens">' + bens + '</ul></div></details>'
+      : "";
+
     return '<article class="mbbc-card">' +
       '<div class="mbbc-top">' +
         '<div class="mbbc-art">' + art + '</div>' +
@@ -230,8 +245,8 @@
         '<div class="mbbc-pts">' + esc(c.offer_display || "") + '</div>' +
         '<div class="mbbc-req">' + esc(c.spend_req || "") + '</div></div>' +
       valueBlock +
-      (c.my_take ? '<p class="mbbc-take"><span class="th">My take</span> ' + esc(c.my_take) + '</p>' : "") +
-      (bens ? '<ul class="mbbc-bens">' + bens + '</ul>' : "") +
+      takeBlock +
+      hiBlock +
       '<div class="mbbc-foot">' +
         ltypeHTML +
         '<div class="mbbc-cta-row">' +
